@@ -10,7 +10,7 @@ from utils.preprocess import get_inv_transform
 def test_myimagefloder():
     show_images = True
     scale_factor = 1.0
-    dataset_folder = 'C:/datasets/hrvs/carla-highres/trainingF'
+    dataset_folder = '/datasets/hrvs/carla-highres/trainingF'
     all_left_img, all_right_img, all_left_disp, all_right_disp = ls.dataloader(dataset_folder)
     loader_eth3 = DA.myImageFloder(all_left_img, all_right_img, all_left_disp, right_disparity=all_right_disp,
                                    rand_scale=[0.225, 0.6 * scale_factor], rand_bright=[0.8, 1.2], order=2)

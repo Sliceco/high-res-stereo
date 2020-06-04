@@ -26,9 +26,12 @@ def default_loader(path):
 
 def disparity_loader(path):
     if '.png' in path:
-        data = Image.open(path)
-        data = np.ascontiguousarray(data, dtype=np.float32) / 256
-        return data
+        disp_data = Image.open(path)
+        disp_data = np.ascontiguousarray(disp_data, dtype=np.float32) / 256
+        return disp_data
+    elif '.npz' in path:
+        disp_data = np.load(path)['x_disparity']
+        return disp_data
     else:
         return rp.readPFM(path)[0]
 

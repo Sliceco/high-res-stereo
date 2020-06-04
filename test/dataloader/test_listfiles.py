@@ -5,9 +5,9 @@ import pytest
 from dataloader.listfiles import dataloader
 
 
-@pytest.mark.parametrize('dataset_folder', ['C:/datasets/eth3d',
-                                            'C:/datasets/middlebury/mb-ex-training/trainingF',
-                                            'C:/datasets/hrvs/carla-highres/trainingF'])
+@pytest.mark.parametrize('dataset_folder', ['/datasets/eth3d',
+                                            '/datasets/middlebury/mb-ex-training/trainingF',
+                                            '/datasets/hrvs/carla-highres/trainingF'])
 def test_dataloader(dataset_folder):
     left, right, disp_l, disp_r = dataloader(dataset_folder)
     assert len(left) == len(right) == len(disp_l) == len(disp_r)

@@ -4,7 +4,7 @@ from dataloader.KITTIloader2012 import dataloader
 
 
 def test_dataloader():
-    dataset_folder = 'C:/datasets/kitti12/training/'
+    dataset_folder = '/datasets/kitti12/training/'
     left, right, disp_l = dataloader(dataset_folder)
     assert len(left) == len(right) == len(disp_l)
     for (l, r, d) in zip(left, right, disp_l):
