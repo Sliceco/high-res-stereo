@@ -10,6 +10,7 @@ from dataloader.listfiles import dataloader
                                             '/datasets/hrvs/carla-highres/trainingF'])
 def test_dataloader(dataset_folder):
     left, right, disp_l, disp_r = dataloader(dataset_folder)
+    assert len(left) > 0
     assert len(left) == len(right) == len(disp_l) == len(disp_r)
     i = 0
     for (l, r, dl, dr) in zip(left, right, disp_l, disp_r):

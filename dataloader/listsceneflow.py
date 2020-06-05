@@ -24,21 +24,24 @@ def dataloader(filepath, use_monkaa=False, use_flying=False, use_driving=True):
     all_left_disp = []
     all_right_disp = []
 
-    # TODO - These are not used by use_flying path could use it
+    # TODO - These are not used except by use_flying path could use it
     test_left_img = []
     test_right_img = []
     test_left_disp = []
     test_right_disp = []
 
     if use_monkaa:
-        raise NotImplementedError('Still need to do this part over')
+        all_left_img += [img for img in images if img.find('left') > -1 and img.find('monkaa') > -1]
+        all_right_img += [img for img in images if img.find('right') > -1 and img.find('monkaa') > -1]
+        all_left_disp += [img for img in disparities if img.find('left') > -1 and img.find('monkaa') > -1]
+        all_right_disp += [img for img in disparities if img.find('right') > -1 and img.find('monkaa') > -1]
 
     if use_flying:
         raise NotImplementedError('Still need to do this part over')
 
     if use_driving:
-        all_left_img += [img for img in images if img.find('left') > -1]
-        all_right_img += [img for img in images if img.find('right') > -1]
-        all_left_disp += [img for img in disparities if img.find('left') > -1]
-        all_right_disp += [img for img in disparities if img.find('right') > -1]
+        all_left_img += [img for img in images if img.find('left') > -1 and img.find('driving') > -1]
+        all_right_img += [img for img in images if img.find('right') > -1 and img.find('driving') > -1]
+        all_left_disp += [img for img in disparities if img.find('left') > -1 and img.find('driving') > -1]
+        all_right_disp += [img for img in disparities if img.find('right') > -1 and img.find('driving') > -1]
     return all_left_img, all_right_img, all_left_disp, all_right_disp

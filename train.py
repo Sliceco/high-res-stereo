@@ -23,7 +23,7 @@ parser.add_argument('--maxdisp', type=int, default=384,
                     help='maxium disparity')
 parser.add_argument('--logname', default='logname',
                     help='log name')
-parser.add_argument('--database', default='/ssd//',
+parser.add_argument('--database', default='/datasets/',
                     help='data path')
 parser.add_argument('--epochs', type=int, default=10,
                     help='number of epochs to train')
@@ -66,15 +66,17 @@ from dataloader import listsceneflow as lt
 from dataloader import KITTIloader2015 as lk15
 from dataloader import KITTIloader2012 as lk12
 from dataloader import MiddleburyLoader as DA
+from dataloader import lidar_loader as lld
 
 batch_size = args.batchsize
 scale_factor = args.maxdisp / 384.  # controls training resolution
-all_left_img, all_right_img, all_left_disp, all_right_disp = ls.dataloader('%s/carla-highres/trainingF' % args.database)
+
+all_left_img, all_right_img, all_left_disp, all_right_disp = ls.dataloader('%s/hrvs/carla-highres/trainingF' % args.database)
 loader_carla = DA.myImageFloder(all_left_img, all_right_img, all_left_disp, right_disparity=all_right_disp,
                                 rand_scale=[0.225, 0.6 * scale_factor], rand_bright=[0.8, 1.2], order=2)
 
 all_left_img, all_right_img, all_left_disp, all_right_disp = ls.dataloader(
-    '%s/mb-ex-training/trainingF' % args.database)  # mb-ex
+    '%s/middlebury/mb-ex-training/trainingF' % args.database)  # mb-ex
 loader_mb = DA.myImageFloder(all_left_img, all_right_img, all_left_disp, right_disparity=all_right_disp,
                              rand_scale=[0.225, 0.6 * scale_factor], rand_bright=[0.8, 1.2], order=0)
 
@@ -94,12 +96,33 @@ all_left_img, all_right_img, all_left_disp, _ = ls.dataloader('%s/eth3d/' % args
 loader_eth3d = DA.myImageFloder(all_left_img, all_right_img, all_left_disp, rand_scale=[0.9, 2.4 * scale_factor],
                                 order=0)
 
-data_inuse = torch.utils.data.ConcatDataset([loader_carla] * 40 +
-                                            [loader_mb] * 500 +
-                                            [loader_scene] +
-                                            [loader_kitti15] +
-                                            [loader_kitti12] * 80 +
-                                            [loader_eth3d] * 1000)
+all_left_img, all_right_img, all_left_disp = lld.dataloader('%s/lidar_dataset/train' % args.database)
+loader_lidar = DA.myImageFloder(all_left_img, all_right_img, all_left_disp, rand_scale=[0.5, 1.25 * scale_factor],
+                                rand_bright=[0.8, 1.2], order=0)
+
+all_dataloaders = [{'name': 'lidar', 'dl': loader_lidar, 'count': 1},
+                   {'name': 'hrvs', 'dl': loader_carla, 'count': 1},
+                   {'name': 'middlebury', 'dl': loader_mb, 'count': 1},
+                   {'name': 'sceneflow', 'dl': loader_scene, 'count': 1},
+                   {'name': 'kitti12', 'dl': loader_kitti12, 'count': 1},
+                   {'name': 'kitti15', 'dl': loader_kitti15, 'count': 1},
+                   {'name': 'eth3d', 'dl': loader_eth3d, 'count': 1}]
+
+max_count = 0
+for dataloader in all_dataloaders:
+    max_count = max(max_count, len(dataloader['dl']))
+
+print('=' * 80)
+concat_dataloaders = []
+for dataloader in all_dataloaders:
+    dataloader['count'] = max(1, max_count // len(dataloader['dl']))
+    concat_dataloaders += [dataloader['dl']] * dataloader['count']
+    print('{name}: {size} (x{count})'.format(name=dataloader['name'],
+                                             size=len(dataloader['dl']),
+                                             count=dataloader['count']))
+data_inuse = torch.utils.data.ConcatDataset(concat_dataloaders)
+print('Total dataset size: {}'.format(len(data_inuse)))
+print('=' * 80)
 
 TrainImgLoader = torch.utils.data.DataLoader(
     data_inuse,
