@@ -19,7 +19,7 @@ from utils import logger
 torch.backends.cudnn.benchmark = True
 
 parser = argparse.ArgumentParser(description='HSM-Net')
-parser.add_argument('--maxdisp', type=int, default=384,
+parser.add_argument('--maxdisp', type=int, default=385,
                     help='maxium disparity')
 parser.add_argument('--logname', default='logname',
                     help='log name')
@@ -27,7 +27,7 @@ parser.add_argument('--database', default='/datasets/',
                     help='data path')
 parser.add_argument('--epochs', type=int, default=10,
                     help='number of epochs to train')
-parser.add_argument('--batchsize', type=int, default=28,
+parser.add_argument('--batchsize', type=int, default=2,
                     help='samples per batch')
 parser.add_argument('--loadmodel', default=None,
                     help='weights path')

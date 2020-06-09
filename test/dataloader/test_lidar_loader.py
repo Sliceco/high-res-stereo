@@ -38,7 +38,7 @@ def test_dataloader(base_path):
         max_disp = max(max_disp, np.max(disp_data))
         min_disp = min(min_disp, np.min(disp_data))
         assert np.min(disp_data) >= min_allowed_disp
-        if np.max(disp_data) > 691:
+        if np.max(disp_data) < 386:
             disp_img = cv2.normalize(disp_data, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
             print(l)
             cv2.imshow('left', cv2.imread(l)[:, ::-1])
